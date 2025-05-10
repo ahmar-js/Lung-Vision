@@ -1,11 +1,6 @@
-# React + TypeScript + Vite
+# Lung Vision
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+LungVision is a transformative, AI-powered initiative aimed at revolutionizing early lung cancer detection through the integration of multi-modal data. The platform fuses imaging data (PET/CT) and molecular biomarkers to enhance diagnostic accuracy via deep learning. Central to LungVision is a Clinical Decision Support System (CDSS) that performs both classification (malignancy detection) and regression (risk scoring), providing real-time, explainable insights to assist clinicians at the point of care.
 
 ## Expanding the ESLint configuration
 
