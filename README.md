@@ -4,7 +4,7 @@ LungVision is a transformative, AI-powered initiative aimed at revolutionizing e
 
 ## Installation
 ```
-cd LungVision
+cd Lung-Vision
 npm install
 npm run dev
 ```
