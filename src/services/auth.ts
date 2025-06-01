@@ -12,7 +12,14 @@ export const authService = {
         password: data.password,
       });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      // Handle specific registration errors
+      if (error.response?.status === 400) {
+        const data = error.response.data;
+        if (data.email && Array.isArray(data.email) && data.email[0].includes('already exists')) {
+          throw new Error('An account with this email already exists. Please try logging in instead.');
+        }
+      }
       return handleApiError(error);
     }
   },
@@ -31,7 +38,11 @@ export const authService = {
       }
       
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
+      // Handle specific login errors
+      if (error.response?.status === 401) {
+        throw new Error('Invalid email or password. Please check your credentials and try again.');
+      }
       return handleApiError(error);
     }
   },
@@ -41,7 +52,7 @@ export const authService = {
     try {
       const refreshToken = tokenManager.getRefreshToken();
       if (!refreshToken) {
-        throw new Error('No refresh token available');
+        throw new Error('Session expired. Please log in again.');
       }
 
       const response = await apiClient.post('/token/refresh/', {
@@ -60,9 +71,14 @@ export const authService = {
       }
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       // If refresh fails, clear tokens
       tokenManager.clearTokens();
+      
+      // Provide user-friendly message
+      if (error.response?.status === 401) {
+        throw new Error('Your session has expired. Please log in again.');
+      }
       return handleApiError(error);
     }
   },
@@ -100,21 +116,16 @@ export const authService = {
     }
   },
 
-  // Get current user info - Note: This endpoint doesn't exist in your backend yet
-  // You'll need to add this endpoint to your Django backend
+  // Get current user info - GET /api/user/me/
   getCurrentUser: async (): Promise<User> => {
     try {
-      // This endpoint needs to be created in Django backend
-      // For now, we'll extract user info from the login response
-      // or create a dedicated endpoint like /api/user/me/
-      
-      // Temporary solution: decode user info from token or use stored data
-      // In a real implementation, you should add this endpoint to Django
       const response = await apiClient.get('/user/me/');
       return response.data;
-    } catch (error) {
-      // If the endpoint doesn't exist, we can't get user data
-      // The user info should be stored during login
+    } catch (error: any) {
+      // Handle specific user fetch errors
+      if (error.response?.status === 401) {
+        throw new Error('Your session has expired. Please log in again.');
+      }
       return handleApiError(error);
     }
   },

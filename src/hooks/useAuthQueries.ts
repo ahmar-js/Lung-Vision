@@ -1,28 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authService } from '@/services/auth';
-import { queryKeys, invalidateAuthQueries } from '@/lib/query-keys';
+import { queryKeys } from '@/lib';
 import { tokenManager } from '@/lib/axios';
 import type { LoginData, RegisterData, User } from '@/types/auth';
 
-// User query hook - modified to work without dedicated user endpoint
+// User query hook - now uses the proper /user/me/ endpoint
 export const useUserQuery = (enabled: boolean = true) => {
   return useQuery({
     queryKey: queryKeys.auth.user(),
     queryFn: async (): Promise<User | null> => {
       try {
-        // First verify if we have a valid token
-        const isValid = await authService.verifyToken();
-        if (!isValid) {
+        // If no tokens, don't make the request
+        if (!tokenManager.hasValidTokens()) {
           return null;
         }
         
-        // Since there's no /user/me/ endpoint yet, we'll rely on cached data
-        // User data will be set during login and persist until logout
-        // If we reach here with valid tokens but no cached data, 
-        // it means the user needs to login again
-        return null;
-      } catch (error) {
+        // Fetch user data from the backend
+        const user = await authService.getCurrentUser();
+        return user;
+      } catch (error: any) {
         // If any error occurs, user is not authenticated
+        console.error('User query error:', error);
+        
+        // Clear tokens if authentication failed
+        if (error?.response?.status === 401) {
+          tokenManager.clearTokens();
+        }
+        
         return null;
       }
     },
@@ -44,12 +48,15 @@ export const useLoginMutation = () => {
         queryClient.setQueryData(queryKeys.auth.user(), response.user);
       }
       
-      // Invalidate and refetch any auth-related queries
-      invalidateAuthQueries(queryClient);
+      // Invalidate and refetch user query to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       // Clear any cached user data on login failure
       queryClient.setQueryData(queryKeys.auth.user(), null);
+      
+      // Log error for debugging but don't expose internal errors
+      console.error('Login mutation error:', error);
     },
   });
 };
@@ -63,7 +70,11 @@ export const useRegisterMutation = () => {
     onSuccess: () => {
       // Don't set user data since registration doesn't log in
       // Just invalidate queries in case there was cached data
-      invalidateAuthQueries(queryClient);
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.all });
+    },
+    onError: (error: any) => {
+      // Log error for debugging
+      console.error('Registration mutation error:', error);
     },
   });
 };
@@ -78,9 +89,12 @@ export const useLogoutMutation = () => {
       // Clear all cached data
       queryClient.clear();
     },
-    onError: () => {
+    onError: (error: any) => {
       // Even if logout API fails, clear local cache
       queryClient.clear();
+      
+      // Log error for debugging
+      console.error('Logout mutation error:', error);
     },
   });
 };
@@ -92,12 +106,15 @@ export const useRefreshTokenMutation = () => {
   return useMutation({
     mutationFn: () => authService.refreshToken(),
     onSuccess: () => {
-      // Don't invalidate user query since we don't have a user endpoint
-      // The user data should remain in cache
+      // Invalidate user query to refetch with new token
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
     },
-    onError: () => {
+    onError: (error: any) => {
       // If refresh fails, clear all data
       queryClient.clear();
+      
+      // Log error for debugging
+      console.error('Token refresh mutation error:', error);
     },
   });
 }; 
