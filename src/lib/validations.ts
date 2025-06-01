@@ -28,8 +28,8 @@ export const passwordValidation = z
   .min(8, "Password must be at least 8 characters")
   .max(32, "Password must not exceed 32 characters")
   .regex(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)"
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]+$/,
+    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&_)"
   );
 
 export const fullNameValidation = z
@@ -86,8 +86,8 @@ export const passwordRequirements = [
   },
   {
     id: 'special',
-    label: 'At least one special character (@$!%*?&)',
-    test: (value: string) => /[@$!%*?&]/.test(value),
+    label: 'At least one special character (@$!%*?&_)',
+    test: (value: string) => /[@$!%*?&_]/.test(value),
   },
 ];
 

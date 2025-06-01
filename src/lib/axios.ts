@@ -65,13 +65,19 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Don't try to refresh tokens for login/register endpoints
+    const isAuthEndpoint = originalRequest.url?.includes('/login/') || 
+                          originalRequest.url?.includes('/register/');
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       originalRequest._retry = true;
 
       try {
         const refreshToken = tokenManager.getRefreshToken();
         if (!refreshToken) {
-          throw new Error('No refresh token available');
+          // Clear tokens and let the error propagate
+          tokenManager.clearTokens();
+          return Promise.reject(error);
         }
 
         // Refresh token request - matches Django endpoint
@@ -94,10 +100,9 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest);
         }
       } catch (refreshError) {
-        // Refresh failed, clear tokens
+        // Refresh failed, clear tokens and let the original error propagate
         tokenManager.clearTokens();
-        // Let React Query handle the error
-        return Promise.reject(refreshError);
+        return Promise.reject(error);
       }
     }
 
@@ -127,40 +132,85 @@ export const handleApiError = (error: any): never => {
   if (error.response) {
     // Server responded with error status
     const data = error.response.data;
+    const status = error.response.status;
     
     // Handle Django DRF validation errors
     if (data && typeof data === 'object') {
       // Handle field-specific errors
       if (data.email || data.password || data.full_name) {
         const fieldErrors = [];
-        if (data.email) fieldErrors.push(`Email: ${Array.isArray(data.email) ? data.email[0] : data.email}`);
-        if (data.password) fieldErrors.push(`Password: ${Array.isArray(data.password) ? data.password[0] : data.password}`);
-        if (data.full_name) fieldErrors.push(`Full name: ${Array.isArray(data.full_name) ? data.full_name[0] : data.full_name}`);
+        if (data.email) fieldErrors.push(`${Array.isArray(data.email) ? data.email[0] : data.email}`);
+        if (data.password) fieldErrors.push(`${Array.isArray(data.password) ? data.password[0] : data.password}`);
+        if (data.full_name) fieldErrors.push(`${Array.isArray(data.full_name) ? data.full_name[0] : data.full_name}`);
         
-        throw new ApiError(fieldErrors.join(', '), error.response.status, data);
+        throw new ApiError(fieldErrors.join(', '), status, data);
       }
       
       // Handle general detail messages
       if (data.detail) {
-        throw new ApiError(data.detail, error.response.status, data);
+        // Provide user-friendly messages for common scenarios
+        let userMessage = data.detail;
+        
+        if (data.detail.toLowerCase().includes('invalid credentials') || 
+            data.detail.toLowerCase().includes('no active account') ||
+            status === 401) {
+          userMessage = 'Invalid email or password. Please check your credentials and try again.';
+        } else if (data.detail.toLowerCase().includes('user already exists') ||
+                   data.detail.toLowerCase().includes('already registered')) {
+          userMessage = 'An account with this email already exists. Please try logging in instead.';
+        } else if (status === 403) {
+          userMessage = 'You do not have permission to perform this action.';
+        } else if (status === 404) {
+          userMessage = 'The requested resource was not found.';
+        } else if (status >= 500) {
+          userMessage = 'Server error. Please try again later or contact support if the problem persists.';
+        }
+        
+        throw new ApiError(userMessage, status, data);
       }
       
       // Handle non_field_errors
       if (data.non_field_errors) {
         const message = Array.isArray(data.non_field_errors) ? data.non_field_errors[0] : data.non_field_errors;
-        throw new ApiError(message, error.response.status, data);
+        throw new ApiError(message, status, data);
       }
     }
     
-    // Fallback error message
-    const message = `Server error: ${error.response.status}`;
-    throw new ApiError(message, error.response.status, data);
+    // Fallback error messages based on status code
+    let fallbackMessage;
+    switch (status) {
+      case 400:
+        fallbackMessage = 'Invalid request. Please check your input and try again.';
+        break;
+      case 401:
+        fallbackMessage = 'Invalid email or password. Please check your credentials and try again.';
+        break;
+      case 403:
+        fallbackMessage = 'You do not have permission to perform this action.';
+        break;
+      case 404:
+        fallbackMessage = 'The requested resource was not found.';
+        break;
+      case 422:
+        fallbackMessage = 'Invalid data provided. Please check your input.';
+        break;
+      case 429:
+        fallbackMessage = 'Too many requests. Please wait a moment and try again.';
+        break;
+      case 500:
+        fallbackMessage = 'Server error. Please try again later.';
+        break;
+      default:
+        fallbackMessage = `An error occurred. Please try again later. (Error ${status})`;
+    }
+    
+    throw new ApiError(fallbackMessage, status, data);
   } else if (error.request) {
     // Network error
-    throw new ApiError('Network error. Please check your connection.');
+    throw new ApiError('Unable to connect to the server. Please check your internet connection and try again.');
   } else {
     // Other error
-    throw new ApiError(error.message || 'An unexpected error occurred');
+    throw new ApiError(error.message || 'An unexpected error occurred. Please try again.');
   }
 };
 

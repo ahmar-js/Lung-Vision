@@ -6,22 +6,26 @@ interface PasswordRequirementsProps {
 
 export function PasswordRequirements({ password }: PasswordRequirementsProps) {
   return (
-    <div className="mt-2 p-3 bg-gray-50 rounded-md border">
-      <p className="text-xs font-medium text-gray-700 mb-2">Password Requirements:</p>
-      <ul className="text-xs text-gray-600 space-y-1">
+    <div>
+      <p className="text-sm font-medium text-gray-800 mb-3">Password Requirements:</p>
+      <ul className="text-sm text-gray-600 space-y-2">
         {passwordRequirements.map((requirement) => {
           const isValid = requirement.test(password);
           return (
             <li
               key={requirement.id}
-              className={`flex items-center ${
-                isValid ? 'text-green-600' : 'text-gray-500'
+              className={`flex items-center transition-colors duration-200 ${
+                isValid ? 'text-green-700' : 'text-gray-600'
               }`}
             >
-              <span className="mr-2">
+              <span className={`mr-3 text-sm font-medium ${
+                isValid ? 'text-green-500' : 'text-gray-400'
+              }`}>
                 {isValid ? '✓' : '•'}
               </span>
-              {requirement.label}
+              <span className={isValid ? 'line-through opacity-75' : ''}>
+                {requirement.label}
+              </span>
             </li>
           );
         })}

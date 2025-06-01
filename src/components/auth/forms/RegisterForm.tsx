@@ -70,7 +70,7 @@ export function RegisterForm({ onSubmit, isLoading }: RegisterFormProps) {
 
         <Button
           type="submit"
-          className="w-full h-11 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium transition-all duration-200"
+          className="w-full h-11 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-medium transition-all duration-300 ease-in-out cursor-pointer disabled:cursor-not-allowed transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2"
           disabled={isLoading}
         >
           {isLoading ? (

@@ -18,6 +18,8 @@ interface FormFieldProps<T extends FieldValues> {
   icon?: React.ComponentType<{ className?: string }>;
   hint?: string;
   children?: React.ReactNode;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 export function FormField<T extends FieldValues>({
@@ -30,6 +32,8 @@ export function FormField<T extends FieldValues>({
   icon: Icon,
   hint,
   children,
+  onFocus,
+  onBlur,
 }: FormFieldProps<T>) {
   return (
     <ShadcnFormField
@@ -51,6 +55,8 @@ export function FormField<T extends FieldValues>({
                 placeholder={placeholder}
                 className={`${Icon ? 'pl-10' : ''} h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500`}
                 disabled={disabled}
+                onFocus={onFocus}
+                onBlur={onBlur}
               />
               {children}
             </div>

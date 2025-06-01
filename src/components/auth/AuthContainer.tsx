@@ -9,12 +9,7 @@ import { RegisterForm } from "./forms/RegisterForm";
 import { useAuth } from "@/hooks/useAuth";
 import type { LoginFormData, RegisterFormData } from "@/lib/validations";
 
-interface AuthContainerProps {
-  onLoginSuccess?: () => void;
-  onRegisterSuccess?: () => void;
-}
-
-export function AuthContainer({ onLoginSuccess, onRegisterSuccess }: AuthContainerProps) {
+export function AuthContainer() {
   const [activeTab, setActiveTab] = useState("login");
   const { 
     login, 
@@ -27,16 +22,14 @@ export function AuthContainer({ onLoginSuccess, onRegisterSuccess }: AuthContain
 
   const handleLogin = async (data: LoginFormData) => {
     await login(data);
-    if (loginState.isSuccess) {
-      onLoginSuccess?.();
-    }
+    // Navigation is now handled inside the login function
   };
 
   const handleRegister = async (data: RegisterFormData) => {
     await register(data);
+    // Switch to login tab after successful registration
     if (registerState.isSuccess) {
       setActiveTab("login");
-      onRegisterSuccess?.();
     }
   };
 
@@ -64,22 +57,22 @@ export function AuthContainer({ onLoginSuccess, onRegisterSuccess }: AuthContain
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login" className="text-sm font-medium">
+              <TabsTrigger value="login" className="text-sm font-medium cursor-pointer">
                 Sign In
               </TabsTrigger>
-              <TabsTrigger value="register" className="text-sm font-medium">
+              <TabsTrigger value="register" className="text-sm font-medium cursor-pointer">
                 Sign Up
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="login" className="space-y-4">
+            <TabsContent value="login" className="space-y-4 animate-in fade-in-50 slide-in-from-right-5 duration-300">
               <LoginForm 
                 onSubmit={handleLogin} 
                 isLoading={loginState.isLoading} 
               />
             </TabsContent>
 
-            <TabsContent value="register" className="space-y-4">
+            <TabsContent value="register" className="space-y-4 animate-in fade-in-50 slide-in-from-left-5 duration-300">
               <RegisterForm 
                 onSubmit={handleRegister} 
                 isLoading={registerState.isLoading} 
