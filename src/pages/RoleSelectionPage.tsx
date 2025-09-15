@@ -63,8 +63,7 @@ export function RoleSelectionPage() {
             </Card>
 
             {/* Researcher Card */}
-            <Card className="border-2 border-cyan-200 cursor-pointer"
-                  onClick={() => handleRoleSelection('researcher')}>
+            <Card className="border-2 border-cyan-200 opacity-60 cursor-not-allowed">
               <CardHeader className="text-center pb-4">
                 <div className="flex justify-center mb-4">
                   <div className="w-16 h-16 bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-full flex items-center justify-center">
@@ -90,12 +89,9 @@ export function RoleSelectionPage() {
                 </div>
                 <Button 
                   className="w-full bg-cyan-600"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRoleSelection('researcher');
-                  }}
+                  disabled
                 >
-                  Continue as Researcher
+                  Coming Soon!
                 </Button>
               </CardContent>
             </Card>
