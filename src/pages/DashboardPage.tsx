@@ -1,5 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
-import { LogOut, User, Activity } from 'lucide-react';
+import { LogOut, User as UserIcon, Activity } from 'lucide-react';
+import type { User } from '@/types/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -14,6 +15,39 @@ export function DashboardPage() {
     await logout();
   };
 
+  // Get role-specific greeting
+  const getRoleBasedGreeting = (user: User | null) => {
+    if (!user?.full_name) return 'Hello!';
+    
+    // Extract first name from full name
+    const firstName = user.full_name.split(' ')[0];
+    
+    switch (user.role) {
+      case 'doctor':
+        return `Hello, Dr. ${firstName}!`;
+      case 'researcher':
+        return `Hello, Researcher ${firstName}!`;
+      default:
+        return `Hello, ${firstName}!`;
+    }
+  };
+
+  // Get role display for card
+  const getRoleDisplay = (user: User | null) => {
+    if (!user?.role) return user?.full_name || '';
+    
+    const firstName = user.full_name?.split(' ')[0] || '';
+    
+    switch (user.role) {
+      case 'doctor':
+        return `Dr. ${firstName}`;
+      case 'researcher':
+        return `Researcher ${firstName}`;
+      default:
+        return user.full_name;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -22,18 +56,28 @@ export function DashboardPage() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center">
-                <User className="w-6 h-6 text-white" />
+                <UserIcon className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
                   Welcome to {APP_NAME}
                 </h1>
                 <p className="text-lg text-gray-600">
-                  Hello, <span className="font-semibold">{user?.full_name}</span>!
+                  <span className="font-semibold">{getRoleBasedGreeting(user || null)}</span>
                 </p>
                 <p className="text-sm text-gray-500">
                   Email: {user?.email}
                 </p>
+                {user?.role === 'doctor' && user.specialization && (
+                  <p className="text-sm text-gray-500">
+                    Specialization: {user.specialization} • {user.hospital_affiliation}
+                  </p>
+                )}
+                {user?.role === 'researcher' && user.research_institution && (
+                  <p className="text-sm text-gray-500">
+                    {user.research_institution} • {user.affiliation_type}
+                  </p>
+                )}
               </div>
             </div>
             <Button
@@ -59,25 +103,25 @@ export function DashboardPage() {
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{user?.full_name}</div>
+              <div className="text-2xl font-bold">{getRoleDisplay(user || null)}</div>
               <p className="text-xs text-muted-foreground">
-                Last login: Today
+                {user?.role ? `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} • ` : ''}Last login: Today
               </p>
             </CardContent>
           </Card>
 
-          {/* Patient Analytics */}
+          {/* Role-specific Analytics */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Patient Scans
+                {user?.role === 'doctor' ? 'Patient Scans' : user?.role === 'researcher' ? 'Research Studies' : 'Data Analysis'}
               </CardTitle>
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0</div>
               <p className="text-xs text-muted-foreground">
-                Coming soon
+                {user?.role === 'doctor' ? 'Ready for patient diagnostics' : user?.role === 'researcher' ? 'Ready for research analysis' : 'Coming soon'}
               </p>
             </CardContent>
           </Card>
@@ -143,7 +187,8 @@ export function DashboardPage() {
                     },
                     user: user ? { 
                       email: user.email, 
-                      full_name: user.full_name 
+                      full_name: user.full_name,
+                      role: user.role
                     } : null,
                     auth: {
                       isAuthenticated: !!user,

@@ -14,7 +14,8 @@ export { queryKeys, invalidateAuthQueries } from './query-keys';
 // Validation schemas
 export { 
   loginSchema, 
-  registerSchema, 
+  doctorRegistrationSchema,
+  researcherRegistrationSchema,
   passwordRequirements,
   emailValidation,
   passwordValidation,
@@ -25,4 +26,8 @@ export {
 export { cn } from './utils';
 
 // Types
-export type { LoginFormData, RegisterFormData } from './validations'; 
+export type { 
+  LoginFormData, 
+  DoctorRegistrationFormData, 
+  ResearcherRegistrationFormData 
+} from './validations'; 

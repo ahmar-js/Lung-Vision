@@ -1,9 +1,10 @@
 import { apiClient, tokenManager, handleApiError, config } from '@/lib/axios';
-import type { User, LoginResponse, RegisterData, LoginData } from '@/types/auth';
+import type { User, LoginResponse, RegistrationResponse, RegisterData, LoginData } from '@/types/auth';
+import type { DoctorRegistrationFormData, ResearcherRegistrationFormData } from '@/lib/validations';
 
 // Authentication service functions - matches Django backend API
 export const authService = {
-  // Register new user - POST /api/register/
+  // Register new user - POST /api/register/ (legacy endpoint)
   register: async (data: RegisterData): Promise<{ detail: string }> => {
     try {
       const response = await apiClient.post('/register/', {
@@ -11,6 +12,110 @@ export const authService = {
         email: data.email,
         password: data.password,
       });
+      return response.data;
+    } catch (error: any) {
+      // Handle specific registration errors
+      if (error.response?.status === 400) {
+        const data = error.response.data;
+        if (data.email && Array.isArray(data.email) && data.email[0].includes('already exists')) {
+          throw new Error('An account with this email already exists. Please try logging in instead.');
+        }
+      }
+      return handleApiError(error);
+    }
+  },
+
+  // Register doctor - POST /api/auth/doctor/register/
+  registerDoctor: async (data: DoctorRegistrationFormData): Promise<RegistrationResponse> => {
+    try {
+      const formData = new FormData();
+      
+      // Basic fields
+      formData.append('full_name', data.fullName);
+      formData.append('email', data.email);
+      formData.append('password', data.password);
+      formData.append('confirm_password', data.confirmPassword);
+      formData.append('country', data.country);
+      formData.append('terms_accepted', 'true');
+      
+      // Optional phone number
+      if (data.phoneNumber) {
+        formData.append('phone_number', data.phoneNumber);
+      }
+      
+      // Doctor-specific fields
+      formData.append('medical_license_number', data.medicalLicenseNumber);
+      formData.append('specialization', data.specialization);
+      formData.append('hospital_affiliation', data.hospitalAffiliation);
+      
+      // File upload
+      if (data.medicalLicense) {
+        formData.append('medical_license_file', data.medicalLicense);
+      }
+
+      const response = await apiClient.post('/auth/doctor/register/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Store tokens if registration includes automatic login
+      if (response.data.tokens?.access && response.data.tokens?.refresh) {
+        tokenManager.setTokens(response.data.tokens.access, response.data.tokens.refresh);
+      }
+
+      return response.data;
+    } catch (error: any) {
+      // Handle specific registration errors
+      if (error.response?.status === 400) {
+        const data = error.response.data;
+        if (data.email && Array.isArray(data.email) && data.email[0].includes('already exists')) {
+          throw new Error('An account with this email already exists. Please try logging in instead.');
+        }
+      }
+      return handleApiError(error);
+    }
+  },
+
+  // Register researcher - POST /api/auth/researcher/register/
+  registerResearcher: async (data: ResearcherRegistrationFormData): Promise<RegistrationResponse> => {
+    try {
+      const formData = new FormData();
+      
+      // Basic fields
+      formData.append('full_name', data.fullName);
+      formData.append('email', data.email);
+      formData.append('password', data.password);
+      formData.append('confirm_password', data.confirmPassword);
+      formData.append('country', data.country);
+      formData.append('terms_accepted', 'true');
+      
+      // Researcher-specific fields
+      formData.append('research_institution', data.researchInstitution);
+      formData.append('affiliation_type', data.affiliationType);
+      formData.append('purpose_of_use', data.purposeOfUse);
+      
+      // Optional fields
+      if (data.orcidId) {
+        formData.append('orcid_id', data.orcidId);
+      }
+      
+      // File upload
+      if (data.institutionalId) {
+        formData.append('institutional_id_file', data.institutionalId);
+      }
+
+      const response = await apiClient.post('/auth/researcher/register/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Store tokens if registration includes automatic login
+      if (response.data.tokens?.access && response.data.tokens?.refresh) {
+        tokenManager.setTokens(response.data.tokens.access, response.data.tokens.refresh);
+      }
+
       return response.data;
     } catch (error: any) {
       // Handle specific registration errors

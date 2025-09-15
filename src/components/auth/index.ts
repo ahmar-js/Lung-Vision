@@ -1,14 +1,18 @@
 // Main components
-export { AuthContainer } from './AuthContainer';
 export { PasswordRequirements } from './PasswordRequirements';
 
 // Form components
 export { LoginForm } from './forms/LoginForm';
-export { RegisterForm } from './forms/RegisterForm';
+export { DoctorRegistrationForm } from './forms/DoctorRegistrationForm';
+export { ResearcherRegistrationForm } from './forms/ResearcherRegistrationForm';
 
 // Field components
 export { FormField } from './fields/FormField';
 export { PasswordField } from './fields/PasswordField';
+export { SelectField } from './fields/SelectField';
+export { FileUploadField } from './fields/FileUploadField';
+export { CheckboxField } from './fields/CheckboxField';
 
-// Legacy component (for backward compatibility)
-export { AuthForms } from './AuthForms'; 
+// Container components
+export { DoctorAuthContainer } from './DoctorAuthContainer';
+export { ResearcherAuthContainer } from './ResearcherAuthContainer'; 

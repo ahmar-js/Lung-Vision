@@ -1,8 +1,8 @@
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate, useLocation } from 'react-router-dom';
-import { AuthContainer } from '@/components/auth/AuthContainer';
+import { ResearcherAuthContainer } from '@/components/auth/ResearcherAuthContainer';
 
-export function LoginPage() {
+export function ResearcherAuthPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
@@ -14,7 +14,7 @@ export function LoginPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center animate-in fade-in-50 duration-500">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4 ease-in-out"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600 mx-auto mb-4 ease-in-out"></div>
           <p className="text-gray-600 animate-pulse">Loading...</p>
         </div>
       </div>
@@ -26,6 +26,6 @@ export function LoginPage() {
     return <Navigate to={from} replace />;
   }
 
-  // Show login form if not authenticated
-  return <AuthContainer />;
-} 
+  // Show researcher authentication form if not authenticated
+  return <ResearcherAuthContainer />;
+}

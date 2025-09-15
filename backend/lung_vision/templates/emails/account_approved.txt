@@ -1,0 +1,47 @@
+🫁 LungVision - Account Approved Successfully!
+
+Dear {{ user.full_name }},
+
+Congratulations! We are pleased to inform you that your {{ user.get_role_display }} account has been APPROVED by our administration team.
+
+ACCOUNT DETAILS:
+================
+Name: {{ user.full_name }}
+Email: {{ user.email }}
+Role: {{ user.get_role_display }}
+{% if user.role == 'doctor' %}Specialization: {{ user.get_specialization_display }}
+Hospital/Clinic: {{ user.hospital_affiliation }}{% elif user.role == 'researcher' %}Institution: {{ user.research_institution }}
+Affiliation: {{ user.get_affiliation_type_display }}{% endif %}
+Country: {{ user.country }}
+Approved on: {{ approval_date|date:"F d, Y" }} at {{ approval_date|time:"g:i A" }}{% if approved_by %}
+Approved by: {{ approved_by.full_name }}{% endif %}
+
+ACCESS INFORMATION:
+==================
+You can now access all features of the LungVision platform. Please use your registered email address and password to log in.
+
+Login URL: {{ login_url }}
+
+{% if user.role == 'doctor' %}FEATURES FOR MEDICAL PROFESSIONALS:
+- Advanced lung analysis tools
+- Patient management features  
+- Professional diagnostic resources
+{% elif user.role == 'researcher' %}FEATURES FOR RESEARCHERS:
+- Research datasets access
+- Analytical tools
+- Collaboration features for studies
+{% endif %}
+
+NEED HELP?
+==========
+If you have any questions or need assistance getting started, please contact our support team at support@lungvision.com
+
+Thank you for joining LungVision. We look forward to supporting your {{ user.role }} activities.
+
+---
+LungVision Team
+Advanced Lung Analysis Platform
+Email: support@lungvision.com
+
+This is an automated message. Please do not reply to this email.
+For support, contact us at support@lungvision.com

@@ -1,23 +1,35 @@
 export interface User {
+  id?: number;
   email: string;
   full_name: string;
-}
+  role: 'doctor' | 'researcher' | 'admin';
+  account_status?: 'pending' | 'approved' | 'rejected';
+  country?: string;
+  phone_number?: string;
+  date_joined?: string;
 
-export interface LoginFormData {
-  email: string;
-  password: string;
-}
+  // Doctor-specific fields
+  medical_license_number?: string;
+  specialization?: string;
+  hospital_affiliation?: string;
 
-export interface RegisterFormData {
-  fullName: string;
-  email: string;
-  password: string;
+  // Researcher-specific fields
+  research_institution?: string;
+  affiliation_type?: string;
+  purpose_of_use?: string;
+  orcid_id?: string;
 }
 
 export interface LoginResponse {
   access: string;
   refresh: string;
   user: User;
+}
+
+export interface RegistrationResponse {
+  detail: string;
+  user: User;
+  // No tokens - user must be approved first
 }
 
 export interface RegisterData {

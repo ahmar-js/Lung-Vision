@@ -55,13 +55,6 @@ export const loginSchema = z.object({
     .min(8, "Password must be at least 8 characters"),
 });
 
-// Registration schema
-export const registerSchema = z.object({
-  fullName: fullNameValidation,
-  email: emailValidation,
-  password: passwordValidation,
-});
-
 // Password requirements for UI display
 export const passwordRequirements = [
   {
@@ -91,6 +84,73 @@ export const passwordRequirements = [
   },
 ];
 
+// Doctor registration schema
+export const doctorRegistrationSchema = z.object({
+  fullName: fullNameValidation,
+  email: emailValidation,
+  password: passwordValidation,
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+  medicalLicenseNumber: z
+    .string()
+    .min(1, "Medical license number is required")
+    .min(5, "Medical license number must be at least 5 characters")
+    .max(20, "Medical license number must be less than 20 characters"),
+  country: z.string().min(1, "Country is required"),
+  specialization: z.string().min(1, "Specialization is required"),
+  hospitalAffiliation: z
+    .string()
+    .min(1, "Hospital/Clinic affiliation is required")
+    .min(2, "Hospital/Clinic name must be at least 2 characters")
+    .max(100, "Hospital/Clinic name must be less than 100 characters"),
+  phoneNumber: z.string().optional(),
+  medicalLicense: z
+    .any()
+    .refine((file) => file != null, "Medical license document is required")
+    .refine(
+      (file) => file == null || file?.size <= 5000000, // 5MB
+      "File size must be less than 5MB"
+    ),
+  agreeToTerms: z.boolean().refine(val => val === true, "You must agree to the terms and conditions"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+// Researcher registration schema
+export const researcherRegistrationSchema = z.object({
+  fullName: fullNameValidation,
+  email: emailValidation,
+  password: passwordValidation,
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+  researchInstitution: z
+    .string()
+    .min(1, "Research institution is required")
+    .min(2, "Institution name must be at least 2 characters")
+    .max(100, "Institution name must be less than 100 characters"),
+  country: z.string().min(1, "Country is required"),
+  affiliationType: z.string().min(1, "Affiliation type is required"),
+  purposeOfUse: z.string().min(1, "Purpose of use is required"),
+  orcidId: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/.test(val),
+      "ORCID ID must be in format 0000-0000-0000-0000"
+    ),
+  institutionalId: z
+    .any()
+    .refine((file) => file != null, "Institutional ID document is required")
+    .refine(
+      (file) => file == null || file?.size <= 5000000, // 5MB
+      "File size must be less than 5MB"
+    ),
+  agreeToTerms: z.boolean().refine(val => val === true, "You must agree to the terms and conditions"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
 // Type exports
 export type LoginFormData = z.infer<typeof loginSchema>;
-export type RegisterFormData = z.infer<typeof registerSchema>; 
+export type DoctorRegistrationFormData = z.infer<typeof doctorRegistrationSchema>;
+export type ResearcherRegistrationFormData = z.infer<typeof researcherRegistrationSchema>; 

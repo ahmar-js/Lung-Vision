@@ -89,7 +89,7 @@ ROOT_URLCONF = 'lung_vision.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -157,8 +157,49 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Email Configuration
+# For development, we'll use console backend to print emails to console
+# For production, configure SMTP settings
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Development
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Production
 
+# SMTP Configuration (for production)
+# EMAIL_HOST = 'smtp.gmail.com'  # Or your SMTP server
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@domain.com'
+# EMAIL_HOST_PASSWORD = 'your-app-password'
 
+# Default email settings
+DEFAULT_FROM_EMAIL = 'LungVision <ahmaraamir33@gmail.com>'
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Frontend URL (for email links)
+FRONTEND_LOGIN_URL = 'http://localhost:3000/role-selection'
+
+# Templates are configured above in TEMPLATES setting
+
+# Logging configuration for email debugging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'email.log',
+        },
+    },
+    'loggers': {
+        'lung_vision.api.email_service': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 
 

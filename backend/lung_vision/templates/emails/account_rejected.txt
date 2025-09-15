@@ -1,0 +1,52 @@
+🫁 LungVision - Account Application Update
+
+Dear {{ user.full_name }},
+
+Thank you for your interest in joining LungVision as a {{ user.get_role_display }}. After careful review by our administration team, we regret to inform you that your account application has NOT been approved at this time.
+
+APPLICATION DETAILS:
+====================
+Name: {{ user.full_name }}
+Email: {{ user.email }}
+Role Applied: {{ user.get_role_display }}
+{% if user.role == 'doctor' %}Specialization: {{ user.get_specialization_display }}
+Hospital/Clinic: {{ user.hospital_affiliation }}{% elif user.role == 'researcher' %}Institution: {{ user.research_institution }}
+Affiliation: {{ user.get_affiliation_type_display }}{% endif %}
+Country: {{ user.country }}
+Reviewed on: {{ rejection_date|date:"F d, Y" }} at {{ rejection_date|time:"g:i A" }}
+
+{% if rejection_reason %}REASON FOR DECISION:
+===================
+{{ rejection_reason }}
+
+{% endif %}WHAT YOU CAN DO:
+================
+1. REVIEW REQUIREMENTS: Please ensure you meet all eligibility criteria for {{ user.get_role_display }} accounts.
+
+2. UPDATE DOCUMENTATION: If applicable, ensure all required documents are clear, valid, and properly uploaded.
+
+3. CONTACT SUPPORT: If you believe this decision was made in error or have additional information to provide, please contact our support team.
+
+4. REAPPLY: You may submit a new application in the future if your circumstances change.
+
+{% if user.role == 'doctor' %}FOR MEDICAL PROFESSIONALS:
+Please ensure your medical license is current, properly documented, and your professional credentials are clearly established.
+{% elif user.role == 'researcher' %}FOR RESEARCHERS:
+Please verify your institutional affiliation, research credentials, and ensure your academic documentation is complete and valid.
+{% endif %}
+
+NEED TO APPEAL OR HAVE QUESTIONS?
+=================================
+Our support team is here to help. Please contact us with any questions about this decision or for guidance on reapplication.
+
+Contact Support: support@lungvision.com
+
+We appreciate your interest in LungVision and apologize that we cannot approve your application at this time.
+
+---
+LungVision Team
+Advanced Lung Analysis Platform
+Email: support@lungvision.com
+
+This is an automated message. Please do not reply to this email.
+For support, contact us at support@lungvision.com

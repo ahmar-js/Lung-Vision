@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Approved - LungVision</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 20px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            background-color: #28a745;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        .title {
+            color: #28a745;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .content {
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+        .user-details {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .cta-button {
+            display: inline-block;
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .cta-button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            font-size: 14px;
+            color: #6c757d;
+            text-align: center;
+        }
+        .contact-info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🫁 LungVision</div>
+            <div class="success-icon">✓</div>
+        </div>
+        
+        <h1 class="title">Account Approved Successfully!</h1>
+        
+        <div class="content">
+            <p>Dear {{ user.full_name }},</p>
+            
+            <p>Congratulations! We are pleased to inform you that your {{ user.get_role_display }} account has been <strong>approved</strong> by our administration team.</p>
+            
+            <div class="user-details">
+                <h3>Account Details:</h3>
+                <p><strong>Name:</strong> {{ user.full_name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Role:</strong> {{ user.get_role_display }}</p>
+                {% if user.role == 'doctor' %}
+                    <p><strong>Specialization:</strong> {{ user.get_specialization_display }}</p>
+                    <p><strong>Hospital/Clinic:</strong> {{ user.hospital_affiliation }}</p>
+                {% elif user.role == 'researcher' %}
+                    <p><strong>Institution:</strong> {{ user.research_institution }}</p>
+                    <p><strong>Affiliation:</strong> {{ user.get_affiliation_type_display }}</p>
+                {% endif %}
+                <p><strong>Country:</strong> {{ user.country }}</p>
+                <p><strong>Approved on:</strong> {{ approval_date|date:"F d, Y" }} at {{ approval_date|time:"g:i A" }}</p>
+                {% if approved_by %}
+                    <p><strong>Approved by:</strong> {{ approved_by.full_name }}</p>
+                {% endif %}
+            </div>
+            
+            <p>You can now access all features of the LungVision platform. Please use your registered email address and password to log in.</p>
+            
+            <div style="text-align: center;">
+                <a href="{{ login_url }}" class="cta-button">Login to LungVision</a>
+            </div>
+            
+            {% if user.role == 'doctor' %}
+                <p><strong>For Medical Professionals:</strong> You now have access to advanced lung analysis tools, patient management features, and professional diagnostic resources.</p>
+            {% elif user.role == 'researcher' %}
+                <p><strong>For Researchers:</strong> You now have access to research datasets, analytical tools, and collaboration features for your studies.</p>
+            {% endif %}
+        </div>
+        
+        <div class="contact-info">
+            <p><strong>Need Help?</strong> If you have any questions or need assistance getting started, please don't hesitate to contact our support team.</p>
+        </div>
+        
+        <div class="footer">
+            <p>Thank you for joining LungVision. We look forward to supporting your {{ user.role }} activities.</p>
+            <p><strong>LungVision Team</strong><br>
+            Advanced Lung Analysis Platform<br>
+            Email: support@lungvision.com</p>
+            
+            <p style="font-size: 12px; margin-top: 20px;">
+                This is an automated message. Please do not reply to this email. 
+                For support, contact us at support@lungvision.com
+            </p>
+        </div>
+    </div>
+</body>
+</html>

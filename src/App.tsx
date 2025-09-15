@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { DashboardPage, LoginPage } from './pages';
+import { DashboardPage, RoleSelectionPage, DoctorAuthPage, ResearcherAuthPage } from './pages';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import './App.css';
 
@@ -7,11 +7,18 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Default redirect to dashboard */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        {/* Default redirect to role selection */}
+        <Route path="/" element={<Navigate to="/role-selection" replace />} />
         
-        {/* Login route */}
-        <Route path="/login" element={<LoginPage />} />
+        {/* Role selection route */}
+        <Route path="/role-selection" element={<RoleSelectionPage />} />
+        
+        {/* Role-specific authentication routes */}
+        <Route path="/auth/doctor" element={<DoctorAuthPage />} />
+        <Route path="/auth/researcher" element={<ResearcherAuthPage />} />
+        
+        {/* Legacy login route - redirect to role selection */}
+        <Route path="/login" element={<Navigate to="/role-selection" replace />} />
         
         {/* Protected dashboard route */}
         <Route 
@@ -23,8 +30,8 @@ function App() {
           } 
         />
         
-        {/* Catch all route - redirect to dashboard */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        {/* Catch all route - redirect to role selection */}
+        <Route path="*" element={<Navigate to="/role-selection" replace />} />
       </Routes>
     </Router>
   );
