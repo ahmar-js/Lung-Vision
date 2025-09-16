@@ -248,3 +248,7 @@ __marimo__/
 # Project uploads (do not commit user-uploaded files)
 backend/lung_vision/institutional_ids/
 backend/lung_vision/medical_licenses/
+
+
+*.zip
+*.pth
