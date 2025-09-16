@@ -3,6 +3,7 @@ import { LogOut, User as UserIcon, Activity } from 'lucide-react';
 import type { User } from '@/types/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ZipUploadCard } from '@/components/doctor/ZipUploadCard';
 
 const APP_NAME = import.meta.env.VITE_APP_NAME || 'Lung Vision';
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || '1.0.0';
@@ -152,30 +153,14 @@ export function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Activity className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                Dashboard Coming Soon
-              </h3>
-              <p className="text-gray-500 mb-4">
-                Your lung vision application dashboard with AI-powered diagnostic tools will be available here.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-medium text-blue-900">PET/CT Analysis</h4>
-                  <p className="text-sm text-blue-700">Multi-modal imaging</p>
-                </div>
-                <div className="p-4 bg-cyan-50 rounded-lg">
-                  <h4 className="font-medium text-cyan-900">Risk Scoring</h4>
-                  <p className="text-sm text-cyan-700">AI-powered assessment</p>
-                </div>
-              </div>
-            </div>
+            {user?.role === 'doctor' && (
+              <ZipUploadCard />
+            )}
+
+
 
             {/* Debug info for development */}
-            {ENABLE_DEV_TOOLS && (
+          {/*  {ENABLE_DEV_TOOLS && (
               <div className="mt-8 p-4 bg-gray-100 rounded-lg">
                 <h3 className="font-semibold text-gray-700 mb-2">Debug Info:</h3>
                 <pre className="text-xs text-gray-600 overflow-auto">
@@ -197,7 +182,7 @@ export function DashboardPage() {
                   }, null, 2)}
                 </pre>
               </div>
-            )}
+            )}*/}
           </CardContent>
         </Card>
       </div>

@@ -10,6 +10,8 @@ from .serializers import (
 )
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
+from rest_framework.views import APIView
+import requests
 
 User = get_user_model()
 
@@ -109,3 +111,31 @@ class UserProfileView(generics.RetrieveAPIView):
             })
         
         return Response(user_data)
+
+
+class FastPredictProxyView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        upload = request.FILES.get('file')
+        if not upload:
+            return Response({'detail': 'Missing file. Field name should be "file".'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            files = {
+                'file': (upload.name, upload.read(), 'application/zip')
+            }
+            resp = requests.post(
+                'http://127.0.0.1:8090/predict',
+                files=files,
+                timeout=300
+            )
+
+            try:
+                data = resp.json()
+            except ValueError:
+                data = {'detail': resp.text}
+
+            return Response(data, status=resp.status_code)
+        except requests.RequestException as e:
+            return Response({'detail': f'Upstream error contacting FastAPI: {str(e)}'}, status=status.HTTP_502_BAD_GATEWAY)

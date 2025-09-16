@@ -4,7 +4,8 @@ from .views import (
     DoctorRegistrationView, 
     ResearcherRegistrationView,
     CustomTokenObtainPairView, 
-    UserProfileView
+    UserProfileView,
+    FastPredictProxyView,
 )
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -31,4 +32,5 @@ urlpatterns = [
     
     # User profile
     path('user/me/', UserProfileView.as_view(), name='user_profile'),
+    path('predict/', FastPredictProxyView.as_view(), name='fastapi_predict_proxy'),
 ]
