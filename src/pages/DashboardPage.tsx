@@ -94,7 +94,7 @@ export function DashboardPage() {
         </div>
 
         {/* Dashboard Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid  gap-6">
           {/* Quick Stats */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -112,7 +112,7 @@ export function DashboardPage() {
           </Card>
 
           {/* Role-specific Analytics */}
-          <Card>
+          {/* <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {user?.role === 'doctor' ? 'Patient Scans' : user?.role === 'researcher' ? 'Research Studies' : 'Data Analysis'}
@@ -125,10 +125,10 @@ export function DashboardPage() {
                 {user?.role === 'doctor' ? 'Ready for patient diagnostics' : user?.role === 'researcher' ? 'Ready for research analysis' : 'Coming soon'}
               </p>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* AI Analysis */}
-          <Card>
+          {/* <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 AI Analysis
@@ -141,7 +141,7 @@ export function DashboardPage() {
                 Ready for deployment
               </p>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Main Dashboard Area */}
